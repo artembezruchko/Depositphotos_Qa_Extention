@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //    CREATE USERS
       document.getElementById('1').onclick = function() {
-      	 let cookie = document.getElementById('0').value + ';' + 'document.cookie ="10_feature_test_bb938a37e85cd63af74d5a042c578a28_value=0";';
+      	 let cookie = document.getElementById('0').value + ';'
+          + 'document.cookie ="10_feature_test_bb938a37e85cd63af74d5a042c578a28_value=0";';
          chrome.tabs.executeScript({
            code: cookie.toString() + ' ' + getCorrectEnv.toString() + ' '  + registreNewUser.toString() + clearStorage.toString() + ' clearStorage();' + ' '   + ' registreNewUser();'
           });
@@ -122,9 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
        document.getElementById('page_a_profile').onclick = function() {
-        let cookie =  'document.cookie ="YwB0HHbX1r=5391713%a2054675f1d96cbd4bdac205522d649dc03cc6ca";';
          chrome.tabs.executeScript({
-           code: cookie.toString() + ' ' + getCorrectEnv.toString() + ' '  + loginAdmin.toString()  + ' loginAdmin();'
+           code: getCorrectEnv.toString() + ' '  + loginAdmin.toString() + ' ' + setAdminCookie.toString() + ' loginAdmin();'
+          });
+      }
+
+      document.getElementById('page_a_set_cookie').onclick = function() {
+         chrome.tabs.executeScript({
+           code:  setAdminCookie.toString()  + ' setAdminCookie();'
           });
       }
 
@@ -311,19 +317,26 @@ function registreNewUser() {
   singUp.onload = function() {
       const userLogin = 'tester-' + Date.now(); 
       const userEmail = userLogin + '-@depositphotos.com';
-      const apiKey = 'STUB';
+      // HERE
+      const apiKey = 'here'; 
       chrome.storage.local.set({'userLogin': userLogin, 'userEmail': userEmail, 'apiKey': apiKey}, function() {});
 
       singUp.document.getElementsByTagName('input')[0].value = userEmail;
       singUp.document.getElementsByTagName('input')[1].value = '123456';
-      singUp.document.getElementsByClassName('button-green')[0].click();  
+      singUp.document.getElementsByClassName('_submit')[0].click();  
   };
   delete singUp;
   
 };
 
+function setAdminCookie() {
+    document.cookie ="Test=Test";
+    //HERE 
+};
+
 function loginAdmin() {
   chrome.storage.local.get(['userId'],function(storage) {
+    setAdminCookie();
     const adminPage = window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
  })
   delete adminPage;
@@ -405,7 +418,7 @@ function openProfile() {
 
 function openAdminBuyerProfile() {
    chrome.storage.local.get(['userId'],function(storage) {
-      window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
+    window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
    })
   
 }
