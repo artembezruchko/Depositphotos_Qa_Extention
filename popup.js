@@ -16,13 +16,30 @@ function getCurrentTabUrl(callback) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+         chrome.storage.local.get(['userId'], function(storage) {
+          var uid = storage.userId;
+          if(typeof uid == 'undefined') {
+            uid = 'Use loginViaApi for get actual userId';
+          }
+            document.getElementById('userId').innerText = 'User id = ' + uid;
+         });
+
 //    CREATE USERS
       document.getElementById('1').onclick = function() {
       	 let cookie = document.getElementById('0').value + ';'
           + 'document.cookie ="10_feature_test_bb938a37e85cd63af74d5a042c578a28_value=0";';
          chrome.tabs.executeScript({
-           code: cookie.toString() + ' ' + getCorrectEnv.toString() + ' '  + registreNewUser.toString() + clearStorage.toString() + ' clearStorage();' + ' '   + ' registreNewUser();'
+           code: cookie.toString() + ' ' + getCorrectEnv.toString() + ' ' + waitMs.toString() + ' '  + registreNewUser.toString() + clearStorage.toString() + ' clearStorage();' + ' '   + ' registreNewUser();'
           });
+      }
+
+      document.getElementById('fill_reg_user_form').onclick = function() {
+         let cookie = document.getElementById('0').value + ';'
+          + 'document.cookie ="10_feature_test_bb938a37e85cd63af74d5a042c578a28_value=0";';
+         chrome.tabs.executeScript({
+           code: cookie.toString() + ' ' + getCorrectEnv.toString() + ' '  + fillRegistrationForm.toString() + clearStorage.toString() + ' clearStorage();' + ' '   + ' fillRegistrationForm();'
+          });
+         alert('Form filled');
       }
 
       document.getElementById('2').onclick = function() {
@@ -134,6 +151,30 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
+      document.getElementById('page_a_build_manual_product').onclick = function() {
+         chrome.tabs.executeScript({
+           code:  getCorrectEnv.toString() + ' ' + setAdminCookie.toString() 
+           + ' ' + openManualProductBuilder.toString() + ' ' 
+           + ' setAdminCookie();' + ' openManualProductBuilder();'
+          });
+      }
+      
+      document.getElementById('page_a_promocodes').onclick = function() {
+         chrome.tabs.executeScript({
+           code:  getCorrectEnv.toString() + ' ' + setAdminCookie.toString() 
+           + ' ' + openPromocodePage.toString() + ' ' 
+           + ' setAdminCookie();' + ' openPromocodePage();'
+          });
+      }
+
+      document.getElementById('page_a_manual_transactions').onclick = function() {
+         chrome.tabs.executeScript({
+           code:  getCorrectEnv.toString() + ' ' + setAdminCookie.toString() 
+           + ' ' + openAdminUserManualTransactions.toString() + ' ' 
+           + ' setAdminCookie();' + ' openAdminUserManualTransactions();'
+          });
+      }
+
 //    API BUYING
       document.getElementById('13').onclick = function() {
          chrome.tabs.executeScript({
@@ -145,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
          chrome.tabs.executeScript({
            code: getCorrectEnv.toString() + ' ' + loginViaApi.toString() + ' loginViaApi();'
           });
+         chrome.storage.local.get(['userId'], function(storage) {
+            document.getElementById('userId').innerText = storage.userId;
+         });
       }
 
       document.getElementById('Mem1151').onclick = function() {
@@ -269,6 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
            code: getCorrectEnv.toString() + ' ' + openPurchaseDetailsCredits.toString() + ' openPurchaseDetailsCredits();'
           });
       }
+
+
+       document.getElementById('PD_non_product').onclick = function() {
+         chrome.tabs.executeScript({
+           code: getCorrectEnv.toString() + ' ' + openPurchaseDetailsNonProduct.toString() + ' openPurchaseDetailsNonProduct();'
+          });
+      }
+
+      document.getElementById('PD_enterprise').onclick = function() {
+         chrome.tabs.executeScript({
+           code: getCorrectEnv.toString() + ' ' + openPurchaseDetailsEnterprise.toString() + ' openPurchaseDetailsEnterprise();'
+          });
+      }
+
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -312,39 +370,83 @@ function clearStorage() {
   chrome.storage.local.clear(function() {});
 };
 
-function registreNewUser() {
-  const singUp = window.open('https://' + getCorrectEnv() +'/signup.html');
-  singUp.onload = function() {
-      const userLogin = 'tester-' + Date.now(); 
-      const userEmail = userLogin + '-@depositphotos.com';
-      // HERE
-      const apiKey = 'here'; 
-      chrome.storage.local.set({'userLogin': userLogin, 'userEmail': userEmail, 'apiKey': apiKey}, function() {});
+// костылище лютое, убить
+function waitMs (ms)  {
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+};
 
-      singUp.document.getElementsByTagName('input')[0].value = userEmail;
-      singUp.document.getElementsByTagName('input')[1].value = '123456';
-      singUp.document.getElementsByClassName('_submit')[0].click();  
-  };
+function fillRegistrationForm() {
+      const userLogin = 'ARTEM-tester-' + Date.now(); 
+      const userEmail = userLogin + '-@art.dev';
+      // DONT COMMIT!!!!!
+      const apiKey = 'apiKey'; // DONT COMMIT!!!!!
+      // DONT COMMIT!!!!!
+      chrome.storage.local.set({'userLogin': userLogin, 'userEmail': userEmail, 'apiKey': apiKey}, function() {});
+      document.getElementsByTagName('input')[0].value = userEmail;
+      document.getElementsByTagName('input')[1].value = '123456';
+      document.getElementsByClassName('_submit')[0].click();  
+};
+
+function registreNewUser() {
+  const singUp = window.open('https://' + getCorrectEnv() +'/signup.html', '_self');
+  singUp.onload = function() {
+    const userLogin = 'ARTEM-tester-' + Date.now(); 
+      const userEmail = userLogin + '-@art.dev';
+      // DONT COMMIT!!!!!
+      const apiKey = 'apiKey'; // DONT COMMIT!!!!!
+      // DONT COMMIT!!!!!
+      chrome.storage.local.set({'userLogin': userLogin, 'userEmail': userEmail, 'apiKey': apiKey}, function() {});
+      
+      singUp.document.getElementsByTagName('input')[0].value = userEmail; //email
+      singUp.document.getElementsByTagName('input')[1].value = '123456'; //password
+      singUp.document.getElementsByClassName('_submit')[0].click();  //registration
+    }
+
   delete singUp;
-  
+
 };
 
 function setAdminCookie() {
     document.cookie ="Test=Test";
-    //HERE 
+    document.cookie = "dEEn2wbX=108218560%3A5bc173f4d6d4dca5244f689048b8445e31407172";   
+    document.cookie = "YwB0HHbX1r=5391713%3Aa2054675f1d96cbd4bdac205522d649dc03cc6ca";   
+};
+
+function openManualProductBuilder() {
+  chrome.storage.local.get(['userId'],function(storage) {
+    setAdminCookie();
+    var user = storage.userId;
+    if (typeof user == 'undefined') {
+      user = '108000000';
+    }
+    window.open('https://admin.' + getCorrectEnv() +'/ManualProduct/build/' + user);
+ })
+};
+
+function openPromocodePage() {
+    setAdminCookie();
+    window.open('https://admin.' + getCorrectEnv() + '/PromoRedemption');
 };
 
 function loginAdmin() {
   chrome.storage.local.get(['userId'],function(storage) {
     setAdminCookie();
-    const adminPage = window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
+    // if (document.location.href.split('.')[0] == 'https://admin')
+    // {
+     const adminPage = window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId, '_self'); 
+    // } else {
+    // const adminPage = window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
+  // }
  })
   delete adminPage;
-  
 };
 
 function fillNewSubAccountForm() {
-  const subaccounts = window.open('https://' + getCorrectEnv() + '/subaccounts/create.html');
+  const subaccounts = window.open('https://' + getCorrectEnv() + '/subaccounts/create.html', '_self');
   subaccounts.onload = function() {
       const loginSub = 'Sub-user-' + Date.now() + '-@depositphotos.com';
       subaccounts.document.getElementsByClassName('input input-xl')[0].value = loginSub;
@@ -418,10 +520,18 @@ function openProfile() {
 
 function openAdminBuyerProfile() {
    chrome.storage.local.get(['userId'],function(storage) {
-    window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId);
+    window.open('https://admin.' + getCorrectEnv() +'/UserProfile/view/' + storage.userId, '_self');
    })
   
 }
+
+function openAdminUserManualTransactions() {
+   chrome.storage.local.get(['userId'],function(storage) {
+    window.open('https://admin.' + getCorrectEnv() +'/ManualTransactions/view/' + storage.userId);
+   })
+  
+}
+
 
 // GS
 
@@ -441,11 +551,19 @@ function openPurchaseDetailsCredits() {
   window.open('https://admin.' + getCorrectEnv() +'/?action=purchase_details&period=today&type=credits&mode=simple&online=1&nocache=1');
 }
 
+function openPurchaseDetailsNonProduct() {
+  window.open('https://admin.' + getCorrectEnv() +'/?action=purchase_details&period=today&type=non_product&mode=simple&online=1&nocache=1');
+}
+
+function openPurchaseDetailsEnterprise() {
+  window.open('https://admin.' + getCorrectEnv() +'/?action=purchase_details&period=today&type=enterprise&mode=simple&online=0&nocache=1');
+}
+
 
 // API
 
 function openAPI() {
-  window.open('https://api3.' + getCorrectEnv() +'/');
+  window.open('https://api3.' + getCorrectEnv() +'/', '_self');
 }
 
 function buyMem1151(){
